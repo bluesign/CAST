@@ -84,12 +84,12 @@ func (a *App) Initialize() {
 
 	// Env
 	env := os.Getenv("APP_ENV")
-	if flag.Lookup("test.v") != nil {
-		env = "TEST"
-		os.Setenv("APP_ENV", "TEST")
-	} else if len(env) == 0 {
-		env = "PROD"
-	}
+	//if flag.Lookup("test.v") != nil {
+	//		env = "TEST"
+	//		os.Setenv("APP_ENV", "TEST")
+	//	} else if len(env) == 0 {
+	env = "PROD"
+	//}
 	a.Env = strings.TrimSpace(env)
 
 	// Set log level based on env

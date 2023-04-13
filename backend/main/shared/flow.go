@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -23,6 +22,7 @@ import (
 
 type FlowAdapter struct {
 	Config           FlowConfig
+	ArchiveClient    *client.Client
 	Client           *client.Client
 	Context          context.Context
 	CustomScriptsMap map[string]CustomScript
@@ -83,9 +83,9 @@ func NewFlowClient(flowEnv string, customScriptsMap map[string]CustomScript) *Fl
 	adapter.URL = config.Networks[adapter.Env]
 
 	// Explicitly set when running test suite
-	if flag.Lookup("test.v") != nil {
-		adapter.URL = "127.0.0.1:3569"
-	}
+	//if flag.Lookup("test.v") != nil {
+	//		adapter.URL = "127.0.0.1:3569"
+	//}
 	log.Info().Msgf("FLOW URL: %s", adapter.URL)
 
 	// create flow client
@@ -94,6 +94,13 @@ func NewFlowClient(flowEnv string, customScriptsMap map[string]CustomScript) *Fl
 		log.Panic().Msgf("Failed to connect to %s.", adapter.URL)
 	}
 	adapter.Client = FlowClient
+
+	FlowClientArchive, err := client.New("archive.mainnet.nodes.onflow.org:9000", grpc.WithInsecure())
+	if err != nil {
+		log.Panic().Msgf("Failed to connect to %s.", adapter.URL)
+	}
+
+	adapter.ArchiveClient = FlowClientArchive
 	return &adapter
 }
 
@@ -103,7 +110,7 @@ func (fa *FlowAdapter) GetAddressBalanceAtBlockHeight(addr string, blockHeight u
 	if err != nil {
 		return err
 	}
-	balanceResponse.PrimaryAccountBalance = balance
+	balanceResponse.PrimaryAccountBalance = uint64(balance * 100000000.0)
 
 	return nil
 }
@@ -256,7 +263,7 @@ func (fa *FlowAdapter) EnforceTokenThreshold(scriptPath, creatorAddr string, c *
 }
 
 // bluesign: this is called in archival node now
-func (fa *FlowAdapter) GetFTBalance(address string, blockHeight uint64, contractName string, contractAddress string, publicPath string) (uint64, error) {
+func (fa *FlowAdapter) GetFTBalance(address string, blockHeight uint64, contractName string, contractAddress string, publicPath string) (float64, error) {
 	flowAddress := flow.HexToAddress(address)
 	cadenceAddress := cadence.NewAddress(flowAddress)
 
@@ -275,7 +282,7 @@ func (fa *FlowAdapter) GetFTBalance(address string, blockHeight uint64, contract
 	script = fa.ReplaceContractPlaceholders(string(script[:]), &dummyContract, true)
 	cadencePath := cadence.Path{Domain: "public", Identifier: *dummyContract.Public_path}
 
-	cadenceValue, err := fa.Client.ExecuteScriptAtBlockHeight(
+	cadenceValue, err := fa.ArchiveClient.ExecuteScriptAtBlockHeight(
 		fa.Context,
 		blockHeight,
 		script,
@@ -299,7 +306,7 @@ func (fa *FlowAdapter) GetFTBalance(address string, blockHeight uint64, contract
 		return 0, err
 	}
 
-	return uint64(balance), nil
+	return balance, nil
 }
 
 func (fa *FlowAdapter) GetNFTIds(voterAddr string, c *Contract, path string) ([]interface{}, error) {

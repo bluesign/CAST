@@ -365,6 +365,7 @@ func (h *Helpers) insertVote(v models.VoteWithBalance, p models.Proposal) errorR
 		return errStrategyNotFound
 	}
 
+	fmt.Println(weight, "weight")
 	if err = p.ValidateBalance(weight); err != nil {
 		log.Error().Err(err).Msg("Account balance is too low to vote on this proposal.")
 		errResponse := errInsufficientBalance

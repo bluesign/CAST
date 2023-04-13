@@ -8,6 +8,6 @@ CREATE TABLE community_users (
 
 /* add emulator service account as admin */
 
-INSERT INTO community_users (community_id, addr, user_type) VALUES (1, '0xf8d6e0586b0a20c7', 'admin');
-INSERT INTO community_users (community_id, addr, user_type) VALUES (1, '0xf8d6e0586b0a20c7', 'author');
-INSERT INTO community_users (community_id, addr, user_type) VALUES (1, '0xf8d6e0586b0a20c7', 'member');
+INSERT INTO community_users (community_id, addr, user_type) VALUES (1, '0x73e4a1094d0bcab6', 'admin');
+INSERT INTO community_users (community_id, addr, user_type) VALUES (1, '0x73e4a1094d0bcab6', 'author');
+INSERT INTO community_users (community_id, addr, user_type) VALUES (1, '0x73e4a1094d0bcab6', 'member');

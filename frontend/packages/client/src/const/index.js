@@ -12,7 +12,7 @@ export const COMMUNITY_NAME_MAX_LENGTH = 50;
 export const COMMUNITY_DESCRIPTION_MAX_LENGTH = 1000;
 
 export const HAS_DELAY_ON_START_TIME =
-  process.env.REACT_APP_APP_ENV?.toUpperCase() === 'PRODUCTION';
+  process.env.REACT_APP_APP_ENV?.toUpperCase() === 'xPRODUCTION';
 
 export const IS_PRODUCTION =
   process.env.REACT_APP_APP_ENV?.toUpperCase() === 'PRODUCTION';
