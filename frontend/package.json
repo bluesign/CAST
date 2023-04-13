@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "prettier": "yarn workspace @cast/client prettier",
-    "build": "yarn workspace @cast/client build --max-old-space-size=12288",
-    "start": "yarn workspace @cast/client start"
+    "prettier": "export SET NODE_OPTIONS=--openssl-legacy-provider && yarn workspace @cast/client prettier",
+    "build": "export SET NODE_OPTIONS=--openssl-legacy-provider && yarn workspace @cast/client build --max-old-space-size=12288",
+    "start": "export SET NODE_OPTIONS=--openssl-legacy-provider && yarn workspace @cast/client start"
   },
   "workspaces": {
     "packages": [

@@ -12,7 +12,6 @@ import (
 
 type StakedTokenWeightedDefault struct {
 	s.StrategyStruct
-	SC s.SnapshotClient
 	DB *s.Database
 }
 
@@ -36,6 +35,7 @@ func (s *StakedTokenWeightedDefault) FetchBalance(
 		log.Error().Err(err).Msg("Error calling snapshot client")
 		return nil, err
 	}
+	fmt.Println("fetch", b)
 	if err := b.CreateBalance(s.DB); err != nil {
 		log.Error().Err(err).Msg("Error creating balance in the database.")
 		return nil, err
@@ -53,7 +53,7 @@ func (s *StakedTokenWeightedDefault) FetchBalanceFromSnapshot(
 	ftBalance.NewFTBalance()
 
 	if *strategy.Contract.Name == "FlowToken" {
-		if err := s.SC.GetAddressBalanceAtBlockHeight(
+		if err := s.FlowAdapter.GetAddressBalanceAtBlockHeight(
 			b.Addr,
 			b.BlockHeight,
 			ftBalance,
@@ -67,7 +67,7 @@ func (s *StakedTokenWeightedDefault) FetchBalanceFromSnapshot(
 		b.StakingBalance = ftBalance.StakingBalance
 
 	} else {
-		if err := s.SC.GetAddressBalanceAtBlockHeight(
+		if err := s.FlowAdapter.GetAddressBalanceAtBlockHeight(
 			b.Addr,
 			b.BlockHeight,
 			ftBalance,
@@ -159,9 +159,7 @@ func (s *StakedTokenWeightedDefault) RequiresSnapshot() bool {
 func (s *StakedTokenWeightedDefault) InitStrategy(
 	f *shared.FlowAdapter,
 	db *shared.Database,
-	sc *s.SnapshotClient,
 ) {
 	s.FlowAdapter = f
 	s.DB = db
-	s.SC = *sc
 }
